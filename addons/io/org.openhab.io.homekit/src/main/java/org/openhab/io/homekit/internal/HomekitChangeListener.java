@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.io.homekit.internal;
 
 import java.util.Collection;
@@ -86,17 +94,17 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
     private void createRootDevice(HomekitTaggedItem taggedItem) {
         try {
-            logger.info("Adding homekit device " + taggedItem.getItem().getName());
+            logger.debug("Adding homekit device " + taggedItem.getItem().getName());
             accessoryRegistry
                     .addRootDevice(HomekitAccessoryFactory.create(taggedItem, itemRegistry, updater, settings));
-            logger.info("Added homekit device " + taggedItem.getItem().getName());
+            logger.debug("Added homekit device " + taggedItem.getItem().getName());
         } catch (Exception e) {
             logger.error("Could not add device: " + e.getMessage(), e);
         }
     }
 
     private void createCharacteristic(HomekitTaggedItem taggedItem) {
-        logger.info("Adding grouped homekit characteristic " + taggedItem.getItem().getName());
+        logger.debug("Adding grouped homekit characteristic " + taggedItem.getItem().getName());
         accessoryRegistry.addCharacteristic(taggedItem);
     }
 }

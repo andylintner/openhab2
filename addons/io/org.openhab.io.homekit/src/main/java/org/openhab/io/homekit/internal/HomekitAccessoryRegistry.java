@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.io.homekit.internal;
 
 import java.util.HashMap;
@@ -36,7 +44,7 @@ class HomekitAccessoryRegistry {
         while (i.hasNext()) {
             HomekitAccessory accessory = i.next();
             if (accessory.getId() == taggedItem.getId()) {
-                logger.info("Removed accessory " + accessory.getId());
+                logger.debug("Removed accessory " + accessory.getId());
                 bridge.removeAccessory(accessory);
                 i.remove();
             }
@@ -73,12 +81,12 @@ class HomekitAccessoryRegistry {
         for (String group : item.getItem().getGroupNames()) {
             if (pendingGroupedAccessories.containsKey(group)) {
                 addCharacteristicToGroup(group, item);
-                logger.info("Added " + item.getItem().getName() + " to " + group);
+                logger.debug("Added " + item.getItem().getName() + " to " + group);
                 return;
             }
         }
         pendingCharacteristics.add(item);
-        logger.info("Stored " + item.getItem().getName() + " until group is ready");
+        logger.debug("Stored " + item.getItem().getName() + " until group is ready");
     }
 
     private void addCharacteristicToGroup(String group, HomekitTaggedItem item) {
@@ -96,7 +104,7 @@ class HomekitAccessoryRegistry {
         if (bridge != null) {
             bridge.addAccessory(accessory);
         }
-        logger.info("Added accessory " + accessory.getId());
+        logger.debug("Added accessory " + accessory.getId());
     }
 
 }

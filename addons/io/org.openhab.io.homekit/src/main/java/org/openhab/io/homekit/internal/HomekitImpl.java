@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.io.homekit.internal;
 
 import java.io.IOException;
@@ -27,7 +35,7 @@ public class HomekitImpl implements Homekit {
     private HomekitServer homekit;
     private HomekitRoot bridge;
     private StorageService storageService;
-    private final HomekitChangeListener homekitRegistry = new HomekitChangeListener();
+    private final HomekitChangeListener changeListener = new HomekitChangeListener();
     private Logger logger = LoggerFactory.getLogger(HomekitImpl.class);
 
     public void setStorageService(StorageService storageService) {
@@ -35,15 +43,15 @@ public class HomekitImpl implements Homekit {
     }
 
     public void setItemRegistry(ItemRegistry itemRegistry) {
-        homekitRegistry.setSettings(settings);
-        homekitRegistry.setItemRegistry(itemRegistry);
+        changeListener.setSettings(settings);
+        changeListener.setItemRegistry(itemRegistry);
     }
 
     @Activate
     protected synchronized void activate(ComponentContext componentContext) {
         try {
             settings.fill(componentContext.getProperties());
-            homekitRegistry.setSettings(settings);
+            changeListener.setSettings(settings);
         } catch (UnknownHostException e) {
             logger.error("Could not activate homekit io: " + e.getMessage(), e);
             return;
@@ -57,13 +65,13 @@ public class HomekitImpl implements Homekit {
 
     @Deactivate
     protected void deactivate() {
-        homekitRegistry.clearAccessories();
+        changeListener.clearAccessories();
         bridge.stop();
         homekit.stop();
         bridge = null;
         homekit = null;
-        homekitRegistry.setBridge(null);
-        homekitRegistry.stop();
+        changeListener.setBridge(null);
+        changeListener.stop();
     }
 
     @Override
@@ -85,6 +93,6 @@ public class HomekitImpl implements Homekit {
         bridge = homekit.createBridge(new HomekitAuthInfoImpl(storageService, settings.getPin()), settings.getName(),
                 settings.getManufacturer(), settings.getModel(), settings.getSerialNumber());
         bridge.start();
-        homekitRegistry.setBridge(bridge);
+        changeListener.setBridge(bridge);
     }
 }

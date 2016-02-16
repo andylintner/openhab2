@@ -1,8 +1,8 @@
 # HomeKit Add-on
 
-This is an add-on that exposes your OpenHAB system as a bridge over the HomeKit protocol.
+This is an add-on that exposes your openHAB system as a bridge over the HomeKit protocol.
 
-Using this add-on, you will be able to control your OpenHAB system using Apple's Siri, or any of a number of HomeKit enabled iOS apps. In order to do so, you will need to make some configuration changes. HomeKit organizes your home into "accessories" that are made up of a number of "characteristics". Some accessory types require a specific set of characteristics.
+Using this add-on, you will be able to control your openHAB system using Apple's Siri, or any of a number of HomeKit enabled iOS apps. In order to do so, you will need to make some configuration changes. HomeKit organizes your home into "accessories" that are made up of a number of "characteristics". Some accessory types require a specific set of characteristics.
 
 ## Global Configuration
 Your first step will be to create the homekit.cfg in your conf/services folder. At the very least, you will need to define a pin number for the bridge. This will be used in iOS when pairing. The pin code is in the form "###-##-###". Requirements beyond this are not clear, and Apple enforces limitations on eligible pins within iOS. At the very least, you cannot use repeating (111-11-111) or sequential (123-45-678) pin codes. If your home network is secure, a good starting point is the pin code used in most sample applications: 031-45-154.
@@ -20,11 +20,11 @@ org.openhab.homekit:networkInterface=192.168.0.6
 ```
 
 ## Item Configuration
-After setting this global configuration, you will need to tag your OpenHAB items in order to map them to the HomeKit ontology. For our purposes, you may consider HomeKit accessories to be of two forms: simple and complex.
+After setting this global configuration, you will need to tag your openHAB items in order to map them to the HomeKit ontology. For our purposes, you may consider HomeKit accessories to be of two forms: simple and complex.
 
-A simple accessory will be mapped to a single OpenHAB item (i.e. a Lighbulb is mapped to a Switch, Dimmer, or Color item). A complex accessory will be made up of multiple OpenHAB items (i.e. a Thermostat is composed of Heating and Cooling thresholds, a mode, and current temperature). Complex accessories require a tag on a Group indicating the accessory type, as well as tags on the items it composes.
+A simple accessory will be mapped to a single openHAB item (i.e. a Lighbulb is mapped to a Switch, Dimmer, or Color item). A complex accessory will be made up of multiple openHAB items (i.e. a Thermostat is composed of Heating and Cooling thresholds, a mode, and current temperature). Complex accessories require a tag on a Group indicating the accessory type, as well as tags on the items it composes.
 
-A A full list of supported accessory types can be found in the table below.
+A full list of supported accessory types can be found in the table below.
 
 <table>
  <tr>
@@ -67,7 +67,7 @@ A A full list of supported accessory types can be found in the table below.
   <td>Thermostat</td>
   <td>&nbsp;</td>
   <td>Group</td>
-  <td>A thermostat requires all child tags defined below.
+  <td>A thermostat requires all child tags defined below, with the exception of autoThreshold, which is optional</td>
  </tr>
  <tr>
   <td>&nbsp;</td>
@@ -97,7 +97,7 @@ A A full list of supported accessory types can be found in the table below.
   <td>&nbsp;</td>
   <td>autoThreshold</td>
   <td>Number</td>
-  <td>A target temperature that will engage the thermostat's heating and cooling actions as necessary. This only applies when heatingCoolingMode is AUTO</td>
+  <td>An optional target temperature that will engage the thermostat's heating and cooling actions as necessary. This only applies when heatingCoolingMode is AUTO</td>
  </tr>
 </table>
 
@@ -116,9 +116,9 @@ String DownstairsThermostatHeatingCoolingMode "Downstairs Thermostat Heating/Coo
 ```
 
 ## Additional Notes
-HomeKit allows only a single pairing to be established with the bridge. This pairing is normally shared across devices via iCloud. If you need to establish a new pairing, you'll need to clear the existing pairings. To do this, you can issue the command ```clearHomekitPairings``` from the OSGi console.
+HomeKit allows only a single pairing to be established with the bridge. This pairing is normally shared across devices via iCloud. If you need to establish a new pairing, you'll need to clear the existing pairings. To do this, you can issue the command ```smarthome homekit clearPairings``` from the OSGi console.
 
 HomeKit requires a unique identifier for each accessory advertised by the bridge. This unique identifier is hashed from the Item's name. For that reason, it is important that the name of your Items exposed to HomeKit remain consistent.
 
-If you encounter any issues with the add-on and need support, it may be important to get detailed logs of your device's communication with OpenHAB. In order to get logs from the underlying library used to implement the HomeKit protocol, add the following to your logback.xml:
-```<logger name="com.beowulfe.hap" level="TRACE" />```
+If you encounter any issues with the add-on and need support, it may be important to get detailed logs of your device's communication with openHAB. In order to get logs from the underlying library used to implement the HomeKit protocol, enable trace logging using the following command:
+```openhab> log:set TRACE com.beowulfe.hap```

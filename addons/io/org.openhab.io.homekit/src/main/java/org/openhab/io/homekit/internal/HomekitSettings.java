@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2014-2015 openHAB UG (haftungsbeschraenkt) and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.io.homekit.internal;
 
 import java.net.InetAddress;
@@ -13,7 +21,7 @@ import org.osgi.framework.FrameworkUtil;
  */
 public class HomekitSettings {
 
-    private final static String NAME = "OpenHAB Homekit Bridge";
+    private final static String NAME = "OpenHAB";
     private final static String MANUFACTURER = "OpenHAB";
     private final static String SERIAL_NUMBER = "none";
 
@@ -144,46 +152,63 @@ public class HomekitSettings {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         HomekitSettings other = (HomekitSettings) obj;
-        if (Double.doubleToLongBits(maximumTemperature) != Double.doubleToLongBits(other.maximumTemperature))
+        if (Double.doubleToLongBits(maximumTemperature) != Double.doubleToLongBits(other.maximumTemperature)) {
             return false;
-        if (Double.doubleToLongBits(minimumTemperature) != Double.doubleToLongBits(other.minimumTemperature))
+        }
+        if (Double.doubleToLongBits(minimumTemperature) != Double.doubleToLongBits(other.minimumTemperature)) {
             return false;
+        }
         if (pin == null) {
-            if (other.pin != null)
+            if (other.pin != null) {
                 return false;
-        } else if (!pin.equals(other.pin))
+            }
+        } else if (!pin.equals(other.pin)) {
             return false;
-        if (port != other.port)
+        }
+        if (port != other.port) {
             return false;
+        }
         if (thermostatAutoMode == null) {
-            if (other.thermostatAutoMode != null)
+            if (other.thermostatAutoMode != null) {
                 return false;
-        } else if (!thermostatAutoMode.equals(other.thermostatAutoMode))
+            }
+        } else if (!thermostatAutoMode.equals(other.thermostatAutoMode)) {
             return false;
+        }
         if (thermostatCoolMode == null) {
-            if (other.thermostatCoolMode != null)
+            if (other.thermostatCoolMode != null) {
                 return false;
-        } else if (!thermostatCoolMode.equals(other.thermostatCoolMode))
+            }
+        } else if (!thermostatCoolMode.equals(other.thermostatCoolMode)) {
             return false;
+        }
         if (thermostatHeatMode == null) {
-            if (other.thermostatHeatMode != null)
+            if (other.thermostatHeatMode != null) {
                 return false;
-        } else if (!thermostatHeatMode.equals(other.thermostatHeatMode))
+            }
+        } else if (!thermostatHeatMode.equals(other.thermostatHeatMode)) {
             return false;
+        }
         if (thermostatOffMode == null) {
-            if (other.thermostatOffMode != null)
+            if (other.thermostatOffMode != null) {
                 return false;
-        } else if (!thermostatOffMode.equals(other.thermostatOffMode))
+            }
+        } else if (!thermostatOffMode.equals(other.thermostatOffMode)) {
             return false;
-        if (useFahrenheitTemperature != other.useFahrenheitTemperature)
+        }
+        if (useFahrenheitTemperature != other.useFahrenheitTemperature) {
             return false;
+        }
         return true;
     }
 
