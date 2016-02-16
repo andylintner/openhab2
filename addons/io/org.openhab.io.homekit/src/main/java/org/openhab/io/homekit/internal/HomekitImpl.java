@@ -16,8 +16,6 @@ import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.storage.StorageService;
 import org.openhab.io.homekit.Homekit;
 import org.osgi.service.component.ComponentContext;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +45,6 @@ public class HomekitImpl implements Homekit {
         changeListener.setItemRegistry(itemRegistry);
     }
 
-    @Activate
     protected synchronized void activate(ComponentContext componentContext) {
         try {
             settings.fill(componentContext.getProperties());
@@ -63,7 +60,6 @@ public class HomekitImpl implements Homekit {
         }
     }
 
-    @Deactivate
     protected void deactivate() {
         changeListener.clearAccessories();
         bridge.stop();
