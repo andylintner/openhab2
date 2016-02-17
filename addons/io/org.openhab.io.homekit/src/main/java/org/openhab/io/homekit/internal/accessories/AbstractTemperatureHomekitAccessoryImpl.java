@@ -53,7 +53,7 @@ abstract class AbstractTemperatureHomekitAccessoryImpl<T extends GenericItem> ex
 
     protected double convertFromCelsius(double degrees) {
         if (settings.useFahrenheitTemperature()) {
-            return Math.round((((9d / 5d) * degrees) + 32d) * 1000d) / 1000d;
+            return Math.round((((9d / 5d) * degrees) + 32d) * 10d) / 10d;
         } else {
             return degrees;
         }

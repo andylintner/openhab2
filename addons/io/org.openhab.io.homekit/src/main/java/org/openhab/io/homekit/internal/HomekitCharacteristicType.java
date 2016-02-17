@@ -20,10 +20,8 @@ import java.util.Map;
 public enum HomekitCharacteristicType {
 
     CURRENT_TEMPERATURE("currentTemperature"),
-    COOLING_THRESHOLD("coolingThreshold"),
-    HEATING_THRESHOLD("heatingThreshold"),
-    HEATING_COOLING_MODE("heatingCoolingMode"),
-    AUTO_THRESHOLD("autoThreshold");
+    TARGET_TEMPERATURE("targetTemperature"),
+    HEATING_COOLING_MODE("heatingCoolingMode");
 
     private static final Map<String, HomekitCharacteristicType> tagMap = new HashMap<>();
 

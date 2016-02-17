@@ -67,7 +67,7 @@ A full list of supported accessory types can be found in the table below.
   <td>Thermostat</td>
   <td>&nbsp;</td>
   <td>Group</td>
-  <td>A thermostat requires all child tags defined below, with the exception of autoThreshold, which is optional</td>
+  <td>A thermostat requires all child tags defined below</td>
  </tr>
  <tr>
   <td>&nbsp;</td>
@@ -83,21 +83,9 @@ A full list of supported accessory types can be found in the table below.
  </tr>
  <tr>
   <td>&nbsp;</td>
-  <td>coolingThreshold</td>
+  <td>targetTemperature</td>
   <td>Number</td>
-  <td>A threshold, above which the thermostat's cooling action will be activated. This only applies when heatingCoolingMode is COOL</td>
- </tr>
- <tr>
-  <td>&nbsp;</td>
-  <td>heatingThreshold</td>
-  <td>Number</td>
-  <td>A threshold, below which the thermostat's heating action will be activated. This only applies when heatingCoolingMode is HEAT</td>
- </tr>
- <tr>
-  <td>&nbsp;</td>
-  <td>autoThreshold</td>
-  <td>Number</td>
-  <td>An optional target temperature that will engage the thermostat's heating and cooling actions as necessary. This only applies when heatingCoolingMode is AUTO</td>
+  <td>A target temperature that will engage the thermostat's heating and cooling actions as necessary, depending on the heatingCoolingMode</td>
  </tr>
 </table>
 
@@ -107,11 +95,9 @@ Tags are applied to items using the prefix "homekit:". See the sample below for 
 Switch KitchenLights "Kitchen Lights" <light> (gKitchen) [ "homekit:Lightbulb" ]
 Dimmer BedroomLights "Bedroom Lights" <light> (gBedroom) [ "homekit:DimmableLightbulb" ]
 Number BedroomTemperature "Bedroom Temperature" (gBedroom) [ "homekit:TemperatureSensor" ]
-Group DownstairsThermostat "Downstairs Thermostat" (gDownstairs) [ "homekit:Thermostat" ]
+Group gDownstairsThermostat "Downstairs Thermostat" (gFF) [ "homekit:Thermostat" ]
 Number DownstairsThermostatCurrentTemp "Downstairs Thermostat Current Temperature" (gDownstairsThermostat) [ "homekit:currentTemperature" ]
-Number Number DownstairsThermostatHeatingThreshold "Downstairs Thermostat Heating Threshold" (gDownstairsThermostat) [ "homekit:heatingThreshold" ]
-Number DownstairsThermostatCoolingThreshold "Downstairs Thermostat Cooling Threshold" (gDownstairsThermostat) [ "homekit:coolingThreshold" ]
-Number DownstairsThermostatAutoThreshold "Downstairs Thermostat Auto Threshold" (gDownstairsThermostat) [ "homekit:autoThreshold" ]
+Number DownstairsThermostatTargetTemperature "Downstairs Thermostat Target Temperature" (gDownstairsThermostat) [ "homekit:targetTemperature" ]
 String DownstairsThermostatHeatingCoolingMode "Downstairs Thermostat Heating/Cooling Mode" (gDownstairsThermostat) [ "homekit:heatingCoolingMode" ]
 ```
 

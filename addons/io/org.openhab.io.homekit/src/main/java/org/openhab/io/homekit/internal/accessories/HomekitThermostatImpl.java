@@ -8,6 +8,7 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.math.BigDecimal;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.smarthome.core.items.GenericItem;
@@ -25,8 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
-import com.beowulfe.hap.accessories.Thermostat;
 import com.beowulfe.hap.accessories.properties.ThermostatMode;
+import com.beowulfe.hap.accessories.thermostat.BasicThermostat;
 
 /**
  * Implements Thermostat as a GroupedAccessory made up of multiple items:
@@ -41,15 +42,13 @@ import com.beowulfe.hap.accessories.properties.ThermostatMode;
  * @author Andy Lintner
  */
 class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<GroupItem>
-        implements Thermostat, GroupedAccessory {
+        implements BasicThermostat, GroupedAccessory {
 
     private final String groupName;
     private final HomekitSettings settings;
     private String currentTemperatureItemName;
-    private String heatingThresholdItemName;
-    private String coolingThresholdItemName;
     private String heatingCoolingModeItemName;
-    private String autoThresholdItemName;
+    private String targetTemperatureItemName;
 
     private Logger logger = LoggerFactory.getLogger(HomekitThermostatImpl.class);
 
@@ -68,10 +67,6 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
     @Override
     public void addCharacteristic(HomekitTaggedItem item) {
         switch (item.getCharacteristicType()) {
-            case COOLING_THRESHOLD:
-                coolingThresholdItemName = item.getItem().getName();
-                break;
-
             case CURRENT_TEMPERATURE:
                 currentTemperatureItemName = item.getItem().getName();
                 break;
@@ -80,12 +75,8 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
                 heatingCoolingModeItemName = item.getItem().getName();
                 break;
 
-            case HEATING_THRESHOLD:
-                heatingThresholdItemName = item.getItem().getName();
-                break;
-
-            case AUTO_THRESHOLD:
-                autoThresholdItemName = item.getItem().getName();
+            case TARGET_TEMPERATURE:
+                targetTemperatureItemName = item.getItem().getName();
                 break;
 
             default:
@@ -97,18 +88,8 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
 
     @Override
     public boolean isComplete() {
-        return coolingThresholdItemName != null && heatingThresholdItemName != null
-                && currentTemperatureItemName != null && heatingCoolingModeItemName != null;
-    }
-
-    @Override
-    public CompletableFuture<Double> getCoolingThresholdTemperature() {
-        Item item = getItemRegistry().get(coolingThresholdItemName);
-        DecimalType state = (DecimalType) item.getStateAs(DecimalType.class);
-        if (state == null) {
-            return CompletableFuture.completedFuture(null);
-        }
-        return CompletableFuture.completedFuture(convertToCelsius(state.doubleValue()));
+        return targetTemperatureItemName != null && currentTemperatureItemName != null
+                && heatingCoolingModeItemName != null;
     }
 
     @Override
@@ -150,24 +131,14 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
     }
 
     @Override
-    public CompletableFuture<Double> getHeatingThresholdTemperature() {
-        Item item = getItemRegistry().get(heatingThresholdItemName);
-        DecimalType state = (DecimalType) item.getStateAs(DecimalType.class);
-        if (state == null) {
-            return CompletableFuture.completedFuture(null);
-        }
-        return CompletableFuture.completedFuture(convertToCelsius(state.doubleValue()));
-    }
-
-    @Override
     public CompletableFuture<ThermostatMode> getTargetMode() {
         return getCurrentMode();
     }
 
     @Override
     public CompletableFuture<Double> getTargetTemperature() {
-        if (autoThresholdItemName != null) {
-            Item item = getItemRegistry().get(autoThresholdItemName);
+        if (targetTemperatureItemName != null) {
+            Item item = getItemRegistry().get(targetTemperatureItemName);
             DecimalType state = (DecimalType) item.getStateAs(DecimalType.class);
             if (state == null) {
                 return CompletableFuture.completedFuture(null);
@@ -176,18 +147,6 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
         } else {
             return CompletableFuture.completedFuture(null);
         }
-    }
-
-    @Override
-    public void setCoolingThresholdTemperature(Double value) throws Exception {
-        NumberItem item = getGenericItem(coolingThresholdItemName);
-        item.setState(new DecimalType(convertFromCelsius(value)));
-    }
-
-    @Override
-    public void setHeatingThresholdTemperature(Double value) throws Exception {
-        NumberItem item = getGenericItem(heatingThresholdItemName);
-        item.setState(new DecimalType(convertFromCelsius(value)));
     }
 
     @Override
@@ -216,13 +175,8 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
 
     @Override
     public void setTargetTemperature(Double value) throws Exception {
-        NumberItem item = getGenericItem(autoThresholdItemName);
-        item.setState(new DecimalType(convertFromCelsius(value)));
-    }
-
-    @Override
-    public void subscribeCoolingThresholdTemperature(HomekitCharacteristicChangeCallback callback) {
-        getUpdater().subscribe(getGenericItem(coolingThresholdItemName), callback);
+        NumberItem item = getGenericItem(targetTemperatureItemName);
+        item.setState(new DecimalType(BigDecimal.valueOf(convertFromCelsius(value))));
     }
 
     @Override
@@ -236,23 +190,13 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
     }
 
     @Override
-    public void subscribeHeatingThresholdTemperature(HomekitCharacteristicChangeCallback callback) {
-        getUpdater().subscribe(getGenericItem(heatingThresholdItemName), callback);
-    }
-
-    @Override
     public void subscribeTargetMode(HomekitCharacteristicChangeCallback callback) {
         getUpdater().subscribe(getGenericItem(heatingCoolingModeItemName), callback);
     }
 
     @Override
     public void subscribeTargetTemperature(HomekitCharacteristicChangeCallback callback) {
-        getUpdater().subscribe(getGenericItem(autoThresholdItemName), callback);
-    }
-
-    @Override
-    public void unsubscribeCoolingThresholdTemperature() {
-        getUpdater().unsubscribe(getGenericItem(coolingThresholdItemName));
+        getUpdater().subscribe(getGenericItem(targetTemperatureItemName), callback);
     }
 
     @Override
@@ -266,18 +210,13 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
     }
 
     @Override
-    public void unsubscribeHeatingThresholdTemperature() {
-        getUpdater().unsubscribe(getGenericItem(heatingThresholdItemName));
-    }
-
-    @Override
     public void unsubscribeTargetMode() {
         getUpdater().unsubscribe(getGenericItem(heatingCoolingModeItemName));
     }
 
     @Override
     public void unsubscribeTargetTemperature() {
-        getUpdater().unsubscribe(getGenericItem(autoThresholdItemName));
+        getUpdater().unsubscribe(getGenericItem(targetTemperatureItemName));
     }
 
     @SuppressWarnings("unchecked")
