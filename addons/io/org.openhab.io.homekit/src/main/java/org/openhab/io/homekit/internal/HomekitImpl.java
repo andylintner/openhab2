@@ -23,7 +23,7 @@ import com.beowulfe.hap.HomekitRoot;
 import com.beowulfe.hap.HomekitServer;
 
 /**
- * Provides access to OpenHAB items via the Homekit API
+ * Provides access to openHAB items via the Homekit API
  *
  * @author Andy Lintner
  */
@@ -46,11 +46,15 @@ public class HomekitImpl implements Homekit {
     }
 
     protected synchronized void activate(ComponentContext componentContext) {
+        modified(componentContext);
+    }
+
+    protected synchronized void modified(ComponentContext componentContext) {
         try {
             settings.fill(componentContext.getProperties());
             changeListener.setSettings(settings);
         } catch (UnknownHostException e) {
-            logger.error("Could not activate homekit io: " + e.getMessage(), e);
+            logger.debug("Could not initialize homekit: " + e.getMessage(), e);
             return;
         }
         try {

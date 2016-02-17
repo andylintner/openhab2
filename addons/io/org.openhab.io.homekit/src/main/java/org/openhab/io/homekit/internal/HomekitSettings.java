@@ -21,8 +21,8 @@ import org.osgi.framework.FrameworkUtil;
  */
 public class HomekitSettings {
 
-    private final static String NAME = "OpenHAB";
-    private final static String MANUFACTURER = "OpenHAB";
+    private final static String NAME = "openHAB";
+    private final static String MANUFACTURER = "openHAB";
     private final static String SERIAL_NUMBER = "none";
 
     private int port = 9123;
@@ -37,14 +37,24 @@ public class HomekitSettings {
     private InetAddress networkInterface;
 
     public void fill(Dictionary<String, ?> properties) throws UnknownHostException {
-        String portString = (String) properties.get("port");
-        if (portString != null) {
-            this.port = Integer.parseInt(portString);
+        Object port = properties.get("port");
+        if (port instanceof Integer) {
+            this.port = (Integer) port;
+        } else if (port instanceof String) {
+            String portString = (String) properties.get("port");
+            if (portString != null) {
+                this.port = Integer.parseInt(portString);
+            }
         }
         this.pin = getOrDefault(properties.get("pin"), this.pin);
-        String useFahrenheitTemperatureString = (String) properties.get("useFahrenheitTemperature");
-        if (useFahrenheitTemperatureString != null) {
-            this.useFahrenheitTemperature = Boolean.valueOf(useFahrenheitTemperatureString);
+        Object useFahrenheitTemperature = properties.get("useFahrenheitTemperature");
+        if (useFahrenheitTemperature instanceof Boolean) {
+            this.useFahrenheitTemperature = (Boolean) useFahrenheitTemperature;
+        } else if (useFahrenheitTemperature instanceof String) {
+            String useFahrenheitTemperatureString = (String) properties.get("useFahrenheitTemperature");
+            if (useFahrenheitTemperatureString != null) {
+                this.useFahrenheitTemperature = Boolean.valueOf(useFahrenheitTemperatureString);
+            }
         }
         Object minimumTemperature = properties.get("minimumTemperature");
         if (minimumTemperature != null) {
@@ -67,7 +77,6 @@ public class HomekitSettings {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private static String getOrDefault(Object value, String defaultValue) {
         if (value == null) {
             return defaultValue;
