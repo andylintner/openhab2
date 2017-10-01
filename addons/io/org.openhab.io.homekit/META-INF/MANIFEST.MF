@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Automatic-Module-Name: org.openhab.io.homekit
 Bundle-ClassPath: 
  .,
- lib/com.beowulfe.hap.hap-1.1.4.jar,
+ lib/com.beowulfe.hap.hap-1.1.5-SNAPSHOT.jar,
  lib/com.nimbusds.srp6a-1.5.2.jar,
  lib/io.netty.netty-all-4.0.32.Final.jar,
  lib/javax.json.javax.json-api-1.0.jar,
@@ -24,6 +24,7 @@ Import-Package:
  org.apache.commons.lang.builder,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.core.common,
  org.eclipse.smarthome.core.common.registry,
  org.eclipse.smarthome.core.events,
  org.eclipse.smarthome.core.items,

@@ -39,6 +39,7 @@ public class HomekitSettings {
     private String thermostatAutoMode = "Auto";
     private String thermostatOffMode = "Off";
     private InetAddress networkInterface;
+    private int startupTimeout = 30;
 
     private final Logger logger = LoggerFactory.getLogger(HomekitSettings.class);
 
@@ -84,6 +85,16 @@ public class HomekitSettings {
             this.networkInterface = InetAddress.getLocalHost();
         } else {
             this.networkInterface = InetAddress.getByName(networkInterface);
+        }
+
+        Object startupTimeout = properties.get("startupTimeout");
+        if (startupTimeout instanceof Integer) {
+            this.startupTimeout = (Integer) startupTimeout;
+        } else if (startupTimeout instanceof String) {
+            String startupTimeoutString = (String) properties.get("startupTimeout");
+            if (startupTimeoutString != null) {
+                this.startupTimeout = Integer.parseInt(startupTimeoutString);
+            }
         }
     }
 
@@ -146,6 +157,10 @@ public class HomekitSettings {
 
     public String getThermostatOffMode() {
         return thermostatOffMode;
+    }
+
+    public int getStartupTimeout() {
+        return startupTimeout;
     }
 
     @Override
