@@ -44,5 +44,10 @@
 			<label>Network Interface</label>
 			<description>Defines the IP address of the network interface to expose the HomeKit integration on.</description>
 		</parameter>
+		<parameter name="startupTimeout" type="integer" required="true">
+		    <label>Startup Timeout</label>
+		    <description>Defines the amount of time, in seconds, we will wait for the published homekit accessory list to match the last set we advertised. If this timeout expires, we publish the new set - any accessories that have not been created may lose homekit client configuration.</description>
+		    <default>30</default>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

@@ -19,9 +19,6 @@ import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.beowulfe.hap.HomekitRoot;
-import com.beowulfe.hap.HomekitServer;
-
 /**
  * Provides access to openHAB items via the Homekit API
  *
@@ -30,8 +27,7 @@ import com.beowulfe.hap.HomekitServer;
 public class HomekitImpl implements Homekit {
 
     private final HomekitSettings settings = new HomekitSettings();
-    private HomekitServer homekit;
-    private HomekitRoot bridge;
+    private OpenhabHomekitBridge bridge = null;
     private StorageService storageService;
     private final HomekitChangeListener changeListener = new HomekitChangeListener();
     private Logger logger = LoggerFactory.getLogger(HomekitImpl.class);
@@ -74,7 +70,6 @@ public class HomekitImpl implements Homekit {
             homekit.stop();
             homekit = null;
         }
-
         changeListener.setBridge(null);
         changeListener.stop();
     }
@@ -94,10 +89,14 @@ public class HomekitImpl implements Homekit {
     }
 
     private void start() throws IOException, InvalidAlgorithmParameterException {
-        homekit = new HomekitServer(settings.getNetworkInterface(), settings.getPort());
+homekit = new HomekitServer(settings.getNetworkInterface(), settings.getPort());
         bridge = homekit.createBridge(new HomekitAuthInfoImpl(storageService, settings.getPin()), settings.getName(),
                 settings.getManufacturer(), settings.getModel(), settings.getSerialNumber());
         bridge.start();
-        changeListener.setBridge(bridge);
+
+        if (bridge == null) {
+            bridge = new OpenhabHomekitBridge(settings, storageService);
+            changeListener.setBridge(bridge);
+        }
     }
 }

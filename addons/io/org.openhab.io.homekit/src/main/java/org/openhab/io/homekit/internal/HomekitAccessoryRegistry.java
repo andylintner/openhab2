@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.beowulfe.hap.HomekitAccessory;
-import com.beowulfe.hap.HomekitRoot;
 
 /**
  * Stores the created HomekitAccessories. GroupedAccessories are also held here
@@ -31,7 +30,7 @@ import com.beowulfe.hap.HomekitRoot;
  */
 class HomekitAccessoryRegistry {
 
-    private HomekitRoot bridge;
+    private OpenhabHomekitBridge bridge;
     private final List<HomekitAccessory> createdAccessories = new LinkedList<>();
     private final Set<Integer> createdIds = new HashSet<>();
     private final Map<String, GroupedAccessory> pendingGroupedAccessories = new HashMap<>();
@@ -58,7 +57,7 @@ class HomekitAccessoryRegistry {
         createdIds.clear();
     }
 
-    public synchronized void setBridge(HomekitRoot bridge) {
+    public synchronized void setBridge(OpenhabHomekitBridge bridge) {
         this.bridge = bridge;
         createdAccessories.forEach(accessory -> bridge.addAccessory(accessory));
     }

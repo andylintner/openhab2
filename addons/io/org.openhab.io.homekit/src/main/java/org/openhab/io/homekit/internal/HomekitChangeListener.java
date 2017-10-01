@@ -17,8 +17,6 @@ import org.openhab.io.homekit.internal.accessories.HomekitAccessoryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.beowulfe.hap.HomekitRoot;
-
 /**
  * Listens for changes to the item registry. When changes are detected, check
  * for Homekit tags and, if present, add the items to the HomekitAccessoryRegistry.
@@ -69,7 +67,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         accessoryRegistry.clear();
     }
 
-    public synchronized void setBridge(HomekitRoot bridge) {
+    public synchronized void setBridge(OpenhabHomekitBridge bridge) {
         accessoryRegistry.setBridge(bridge);
     }
 
