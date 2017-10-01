@@ -35,6 +35,7 @@ public class HomekitSettings {
     private String thermostatAutoMode = "Auto";
     private String thermostatOffMode = "Off";
     private InetAddress networkInterface;
+    private int startupTimeout = 30;
 
     public void fill(Dictionary<String, ?> properties) throws UnknownHostException {
         Object port = properties.get("port");
@@ -74,6 +75,16 @@ public class HomekitSettings {
             this.networkInterface = InetAddress.getLocalHost();
         } else {
             this.networkInterface = InetAddress.getByName(networkInterface);
+        }
+
+        Object startupTimeout = properties.get("startupTimeout");
+        if (startupTimeout instanceof Integer) {
+            this.startupTimeout = (Integer) startupTimeout;
+        } else if (startupTimeout instanceof String) {
+            String startupTimeoutString = (String) properties.get("startupTimeout");
+            if (startupTimeoutString != null) {
+                this.startupTimeout = Integer.parseInt(startupTimeoutString);
+            }
         }
     }
 
@@ -135,6 +146,10 @@ public class HomekitSettings {
 
     public String getThermostatOffMode() {
         return thermostatOffMode;
+    }
+
+    public int getStartupTimeout() {
+        return startupTimeout;
     }
 
     @Override
