@@ -8,9 +8,6 @@
  */
 package org.openhab.io.homekit.internal;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Enum of the possible device types. The defined tag string can be used
  * as a tag on an item to enable it for Homekit.
@@ -19,29 +16,13 @@ import java.util.Map;
  */
 public enum HomekitDeviceType {
 
-    DIMMABLE_LIGHTBULB("DimmableLighting"),
-    HUMIDITY_SENSOR("CurrentHumidity"),
-    LIGHTBULB("Lighting"),
-    SWITCH("Switchable"),
-    TEMPERATURE_SENSOR("CurrentTemperature"),
-    THERMOSTAT("Thermostat"),
-    COLORFUL_LIGHTBULB("ColorfulLighting");
+    DIMMABLE_LIGHTBULB,
+    HUMIDITY_SENSOR,
+    LIGHTBULB,
+    SWITCH,
+    TEMPERATURE_SENSOR,
+    THERMOSTAT,
+    COLORFUL_LIGHTBULB,
+    WINDOW_COVERING;
 
-    private static final Map<String, HomekitDeviceType> tagMap = new HashMap<>();
-
-    static {
-        for (HomekitDeviceType type : HomekitDeviceType.values()) {
-            tagMap.put(type.tag, type);
-        }
-    }
-
-    private final String tag;
-
-    private HomekitDeviceType(String tag) {
-        this.tag = tag;
-    }
-
-    public static HomekitDeviceType valueOfTag(String tag) {
-        return tagMap.get(tag);
-    }
 }
