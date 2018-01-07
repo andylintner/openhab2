@@ -25,7 +25,7 @@ public class HomekitWindowCovering extends AbstractHomekitAccessoryImpl<Rollersh
         if (value == null) {
             return CompletableFuture.completedFuture(null);
         }
-        return CompletableFuture.completedFuture(value.intValue());
+        return CompletableFuture.completedFuture(100 - value.intValue());
     }
 
     @Override
@@ -50,7 +50,7 @@ public class HomekitWindowCovering extends AbstractHomekitAccessoryImpl<Rollersh
 
     @Override
     public CompletableFuture<Void> setTargetPosition(int value) throws Exception {
-        getItem().send(new PercentType(value));
+        getItem().send(new PercentType(100 - value));
         return CompletableFuture.completedFuture(null);
     }
 
