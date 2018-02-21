@@ -77,7 +77,7 @@ public class OpenhabHomekitBridge {
         currentState.put(accessory.getId(), accessory.getClass());
 
         if (!started.get()) {
-            if (targetState.equals(serializeState())) {
+            if (serializeState().equals(targetState)) {
                 logger.info("Reached homekit target state for version {}, starting", targetVersion);
                 if (started.compareAndSet(false, true)) {
                     doStart();
