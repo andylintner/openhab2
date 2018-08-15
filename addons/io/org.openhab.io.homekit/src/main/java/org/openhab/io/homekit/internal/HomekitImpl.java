@@ -66,10 +66,6 @@ public class HomekitImpl implements Homekit {
             bridge.stop();
             bridge = null;
         }
-        if (homekit != null){
-            homekit.stop();
-            homekit = null;
-        }
         changeListener.setBridge(null);
         changeListener.stop();
     }
@@ -89,11 +85,6 @@ public class HomekitImpl implements Homekit {
     }
 
     private void start() throws IOException, InvalidAlgorithmParameterException {
-homekit = new HomekitServer(settings.getNetworkInterface(), settings.getPort());
-        bridge = homekit.createBridge(new HomekitAuthInfoImpl(storageService, settings.getPin()), settings.getName(),
-                settings.getManufacturer(), settings.getModel(), settings.getSerialNumber());
-        bridge.start();
-
         if (bridge == null) {
             bridge = new OpenhabHomekitBridge(settings, storageService);
             changeListener.setBridge(bridge);
