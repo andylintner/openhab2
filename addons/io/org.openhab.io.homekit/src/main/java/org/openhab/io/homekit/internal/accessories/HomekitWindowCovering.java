@@ -2,11 +2,12 @@ package org.openhab.io.homekit.internal.accessories;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.smarthome.core.items.ItemRegistry;
+import org.eclipse.smarthome.core.items.Item;
+import org.eclipse.smarthome.core.items.Metadata;
 import org.eclipse.smarthome.core.library.items.RollershutterItem;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
-import org.openhab.io.homekit.internal.HomekitTaggedItem;
+import org.openhab.io.homekit.internal.OpenhabHomekitBridge;
 
 import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
 import com.beowulfe.hap.accessories.WindowCovering;
@@ -14,14 +15,14 @@ import com.beowulfe.hap.accessories.properties.WindowCoveringPositionState;
 
 public class HomekitWindowCovering extends AbstractHomekitAccessoryImpl<RollershutterItem> implements WindowCovering {
 
-    public HomekitWindowCovering(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater) {
-        super(taggedItem, itemRegistry, updater, RollershutterItem.class);
+    public HomekitWindowCovering(Item item, Metadata metadata, HomekitAccessoryUpdater updater,
+            OpenhabHomekitBridge bridge) {
+        super(item, metadata, updater, bridge, RollershutterItem.class);
     }
 
     @Override
     public CompletableFuture<Integer> getCurrentPosition() {
-        PercentType value = (PercentType) getItem().getStateAs(PercentType.class);
+        PercentType value = getItem().getStateAs(PercentType.class);
         if (value == null) {
             return CompletableFuture.completedFuture(null);
         }

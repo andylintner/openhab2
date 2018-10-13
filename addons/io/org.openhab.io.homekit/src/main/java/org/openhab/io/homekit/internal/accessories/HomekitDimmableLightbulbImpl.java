@@ -12,12 +12,13 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.GroupItem;
-import org.eclipse.smarthome.core.items.ItemRegistry;
+import org.eclipse.smarthome.core.items.Item;
+import org.eclipse.smarthome.core.items.Metadata;
 import org.eclipse.smarthome.core.library.items.DimmerItem;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
-import org.openhab.io.homekit.internal.HomekitTaggedItem;
+import org.openhab.io.homekit.internal.OpenhabHomekitBridge;
 
 import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
 import com.beowulfe.hap.accessories.DimmableLightbulb;
@@ -27,11 +28,11 @@ import com.beowulfe.hap.accessories.DimmableLightbulb;
  *
  * @author Andy Lintner
  */
-class HomekitDimmableLightbulbImpl extends AbstractHomekitLightbulbImpl<DimmerItem>implements DimmableLightbulb {
+class HomekitDimmableLightbulbImpl extends AbstractHomekitLightbulbImpl<DimmerItem> implements DimmableLightbulb {
 
-    public HomekitDimmableLightbulbImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater) {
-        super(taggedItem, itemRegistry, updater, DimmerItem.class);
+    public HomekitDimmableLightbulbImpl(Item item, Metadata metadata, HomekitAccessoryUpdater updater,
+            OpenhabHomekitBridge bridge) {
+        super(item, metadata, updater, bridge, DimmerItem.class);
     }
 
     @Override

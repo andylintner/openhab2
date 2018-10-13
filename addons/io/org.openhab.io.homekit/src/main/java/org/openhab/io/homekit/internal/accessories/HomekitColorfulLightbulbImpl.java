@@ -10,14 +10,15 @@ package org.openhab.io.homekit.internal.accessories;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.smarthome.core.items.ItemRegistry;
+import org.eclipse.smarthome.core.items.Item;
+import org.eclipse.smarthome.core.items.Metadata;
 import org.eclipse.smarthome.core.library.items.ColorItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
-import org.openhab.io.homekit.internal.HomekitTaggedItem;
+import org.openhab.io.homekit.internal.OpenhabHomekitBridge;
 
 import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
 import com.beowulfe.hap.accessories.ColorfulLightbulb;
@@ -31,9 +32,9 @@ import com.beowulfe.hap.accessories.DimmableLightbulb;
 class HomekitColorfulLightbulbImpl extends AbstractHomekitLightbulbImpl<ColorItem>
         implements ColorfulLightbulb, DimmableLightbulb {
 
-    public HomekitColorfulLightbulbImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater) {
-        super(taggedItem, itemRegistry, updater, ColorItem.class);
+    public HomekitColorfulLightbulbImpl(Item item, Metadata metadata, HomekitAccessoryUpdater updater,
+            OpenhabHomekitBridge bridge) {
+        super(item, metadata, updater, bridge, ColorItem.class);
     }
 
     @Override
@@ -78,7 +79,7 @@ class HomekitColorfulLightbulbImpl extends AbstractHomekitLightbulbImpl<ColorIte
         if (state instanceof HSBType) {
             HSBType hsb = (HSBType) state;
             HSBType newState = new HSBType(new DecimalType(value), hsb.getSaturation(), hsb.getBrightness());
-            ((ColorItem) getItem()).send(newState);
+            getItem().send(newState);
             return CompletableFuture.completedFuture(null);
         } else {
             // state is undefined (light is not connected)
@@ -95,7 +96,7 @@ class HomekitColorfulLightbulbImpl extends AbstractHomekitLightbulbImpl<ColorIte
         if (state instanceof HSBType) {
             HSBType hsb = (HSBType) state;
             HSBType newState = new HSBType(hsb.getHue(), new PercentType(value.intValue()), hsb.getBrightness());
-            ((ColorItem) getItem()).send(newState);
+            getItem().send(newState);
             return CompletableFuture.completedFuture(null);
         } else {
             // state is undefined (light is not connected)
@@ -112,7 +113,7 @@ class HomekitColorfulLightbulbImpl extends AbstractHomekitLightbulbImpl<ColorIte
         if (state instanceof HSBType) {
             HSBType hsb = (HSBType) state;
             HSBType newState = new HSBType(hsb.getHue(), hsb.getSaturation(), new PercentType(value));
-            ((ColorItem) getItem()).send(newState);
+            getItem().send(newState);
             return CompletableFuture.completedFuture(null);
         } else {
             // state is undefined (light is not connected)

@@ -12,11 +12,12 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.GroupItem;
-import org.eclipse.smarthome.core.items.ItemRegistry;
+import org.eclipse.smarthome.core.items.Item;
+import org.eclipse.smarthome.core.items.Metadata;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
-import org.openhab.io.homekit.internal.HomekitTaggedItem;
+import org.openhab.io.homekit.internal.OpenhabHomekitBridge;
 
 import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
 import com.beowulfe.hap.accessories.Lightbulb;
@@ -29,15 +30,15 @@ import com.beowulfe.hap.accessories.Lightbulb;
 abstract class AbstractHomekitLightbulbImpl<T extends SwitchItem> extends AbstractHomekitAccessoryImpl<T>
         implements Lightbulb {
 
-    public AbstractHomekitLightbulbImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater, Class<T> expectedItemClass) {
-        super(taggedItem, itemRegistry, updater, expectedItemClass);
+    public AbstractHomekitLightbulbImpl(Item item, Metadata metadata, HomekitAccessoryUpdater updater,
+            OpenhabHomekitBridge bridge, Class<T> expectedItemClass) {
+        super(item, metadata, updater, bridge, expectedItemClass);
     }
 
     @Override
     public CompletableFuture<Boolean> getLightbulbPowerState() {
-        OnOffType state = (OnOffType) getItem().getStateAs(OnOffType.class);
-        return CompletableFuture.completedFuture(state == OnOffType.ON);
+        OnOffType state = getItem().getStateAs(OnOffType.class);
+        return CompletableFuture.completedFuture(state != null ? state == OnOffType.ON : null);
     }
 
     @Override

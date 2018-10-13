@@ -12,11 +12,12 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.GroupItem;
-import org.eclipse.smarthome.core.items.ItemRegistry;
+import org.eclipse.smarthome.core.items.Item;
+import org.eclipse.smarthome.core.items.Metadata;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
-import org.openhab.io.homekit.internal.HomekitTaggedItem;
+import org.openhab.io.homekit.internal.OpenhabHomekitBridge;
 
 import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
 import com.beowulfe.hap.accessories.Switch;
@@ -26,15 +27,16 @@ import com.beowulfe.hap.accessories.Switch;
  *
  * @author Andy Lintner
  */
-public class HomekitSwitchImpl extends AbstractHomekitAccessoryImpl<SwitchItem>implements Switch {
+public class HomekitSwitchImpl extends AbstractHomekitAccessoryImpl<SwitchItem> implements Switch {
 
-    public HomekitSwitchImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry, HomekitAccessoryUpdater updater) {
-        super(taggedItem, itemRegistry, updater, SwitchItem.class);
+    public HomekitSwitchImpl(Item item, Metadata metadata, HomekitAccessoryUpdater updater,
+            OpenhabHomekitBridge bridge) {
+        super(item, metadata, updater, bridge, SwitchItem.class);
     }
 
     @Override
     public CompletableFuture<Boolean> getSwitchState() {
-        OnOffType state = (OnOffType) getItem().getStateAs(OnOffType.class);
+        OnOffType state = getItem().getStateAs(OnOffType.class);
         return CompletableFuture.completedFuture(state == OnOffType.ON);
     }
 

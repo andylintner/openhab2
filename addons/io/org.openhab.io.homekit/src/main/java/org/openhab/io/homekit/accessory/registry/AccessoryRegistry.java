@@ -1,4 +1,4 @@
-package org.openhab.io.homekit.accessory;
+package org.openhab.io.homekit.accessory.registry;
 
 import java.util.Map;
 import java.util.Optional;
@@ -8,6 +8,8 @@ import java.util.function.BiFunction;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.Metadata;
+import org.eclipse.smarthome.core.items.MetadataKey;
+import org.eclipse.smarthome.core.items.MetadataRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,20 +18,26 @@ public class AccessoryRegistry {
     private final Map<String, Accessory> accessoriesByName = new ConcurrentHashMap<>();
     private final BiFunction<Item, Metadata, Accessory> accessoryFactory;
     private final Logger logger = LoggerFactory.getLogger(AccessoryRegistry.class);
+    private final String metadataNamespace;
+    private final MetadataRegistry metadataRegistry;
 
-    public AccessoryRegistry(BiFunction<Item, Metadata, Accessory> accessoryFactory) {
+    public AccessoryRegistry(BiFunction<Item, Metadata, Accessory> accessoryFactory, String metadataNamespace,
+            MetadataRegistry metadataRegistry) {
         this.accessoryFactory = accessoryFactory;
+        this.metadataNamespace = metadataNamespace;
+        this.metadataRegistry = metadataRegistry;
     }
 
     synchronized void add(Item item, @Nullable Metadata metadata) {
         if (!accessoriesByName.containsKey(item.getName())) {
             for (String groupName : item.getGroupNames()) {
                 if (accessoriesByName.containsKey(groupName)) {
-                    accessoriesByName.get(groupName).addChildItem(item, Optional.ofNullable(metadata));
+                    accessoriesByName.get(groupName).addChildItem(item,
+                            Optional.ofNullable(metadata != null ? metadata : getMetadata(item)));
                     return;
                 }
             }
-            Accessory accessory = accessoryFactory.apply(item, metadata);
+            Accessory accessory = accessoryFactory.apply(item, metadata != null ? metadata : getMetadata(item));
             if (accessory != null) {
                 accessoriesByName.put(item.getName(), accessory);
             }
@@ -62,5 +70,9 @@ public class AccessoryRegistry {
         if (accessory != null) {
             accessory.updatedItem(oldElement, element);
         }
+    }
+
+    Metadata getMetadata(Item item) {
+        return metadataRegistry.get(new MetadataKey(metadataNamespace, item.getName()));
     }
 }

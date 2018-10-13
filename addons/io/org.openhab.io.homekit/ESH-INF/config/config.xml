@@ -15,31 +15,26 @@
 			<description>Defines the pin, used for pairing, in the form ###-##-###.</description>
 			<default>031-45-154</default>
 		</parameter>
-		<parameter name="useFahrenheitTemperature" type="boolean" required="true">
-			<label>Use Fahrenheit Temperature</label>
-			<description>Defines whether or not to direct HomeKit clients to use fahrenheit temperatures instead of celsius.</description>
-			<default>false</default>
-		</parameter>
 		<parameter name="thermostatCoolMode" type="text" required="true">
-			<label>Thermostat Cool Mode</label>
-			<description>Defines the string to look for in thermostat heatingCoolingMode characteristics to indicate COOL mode.</description>
-			<default>CoolOn</default>
-		</parameter>
-		<parameter name="thermostatHeatMode" type="text" required="true">
-			<label>Thermostat Heat Mode</label>
-			<description>Defines the string to look for in thermostat heatingCoolingMode characteristics to indicate HEAT mode.</description>
-			<default>HeatOn</default>
-		</parameter>
-		<parameter name="thermostatAutoMode" type="text" required="true">
-			<label>Thermostat Auto Mode</label>
-			<description>Defines the string to look for in thermostat heatingCoolingMode characteristics to indicate AUTO mode.</description>
-			<default>Auto</default>
-		</parameter>
-		<parameter name="thermostatOffMode" type="text" required="true">
-			<label>Thermostat Off Mode</label>
-			<description>Defines the string to look for in thermostat heatingCoolingMode characteristics to indicate OFF mode.</description>
-			<default>Off</default>
-		</parameter>
+            <label>Thermostat Cool Mode</label>
+            <description>Defines the string to look for in thermostat heatingCoolingMode characteristics to indicate COOL mode.</description>
+            <default>CoolOn</default>
+        </parameter>
+        <parameter name="thermostatHeatMode" type="text" required="true">
+            <label>Thermostat Heat Mode</label>
+            <description>Defines the string to look for in thermostat heatingCoolingMode characteristics to indicate HEAT mode.</description>
+            <default>HeatOn</default>
+        </parameter>
+        <parameter name="thermostatAutoMode" type="text" required="true">
+            <label>Thermostat Auto Mode</label>
+            <description>Defines the string to look for in thermostat heatingCoolingMode characteristics to indicate AUTO mode.</description>
+            <default>Auto</default>
+        </parameter>
+        <parameter name="thermostatOffMode" type="text" required="true">
+            <label>Thermostat Off Mode</label>
+            <description>Defines the string to look for in thermostat heatingCoolingMode characteristics to indicate OFF mode.</description>
+            <default>Off</default>
+        </parameter>
 		<parameter name="networkInterface" type="text" required="false">
 			<label>Network Interface</label>
 			<description>Defines the IP address of the network interface to expose the HomeKit integration on.</description>

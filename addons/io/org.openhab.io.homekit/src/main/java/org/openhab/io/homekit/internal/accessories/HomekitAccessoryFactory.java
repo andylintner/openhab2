@@ -1,55 +1,91 @@
-/**
- * Copyright (c) 2010-2018 by the respective copyright holders.
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- */
 package org.openhab.io.homekit.internal.accessories;
 
-import org.eclipse.smarthome.core.items.ItemRegistry;
+import java.util.function.BiFunction;
+
+import org.eclipse.smarthome.core.items.Item;
+import org.eclipse.smarthome.core.items.Metadata;
+import org.eclipse.smarthome.core.library.items.ColorItem;
+import org.eclipse.smarthome.core.library.items.DimmerItem;
+import org.openhab.io.homekit.accessory.registry.Accessory;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
-import org.openhab.io.homekit.internal.HomekitSettings;
-import org.openhab.io.homekit.internal.HomekitTaggedItem;
+import org.openhab.io.homekit.internal.HomekitMetadataClass;
+import org.openhab.io.homekit.internal.HomekitTag;
+import org.openhab.io.homekit.internal.OpenhabHomekitBridge;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.beowulfe.hap.HomekitAccessory;
+public class HomekitAccessoryFactory implements BiFunction<Item, Metadata, Accessory> {
 
-/**
- * Creates a HomekitAccessory for a given HomekitTaggedItem.
- *
- * @author Andy Lintner
- */
-public class HomekitAccessoryFactory {
+    private final HomekitAccessoryUpdater updater;
+    private final OpenhabHomekitBridge bridge;
+    private Logger logger = LoggerFactory.getLogger(HomekitAccessoryFactory.class);
 
-    public static HomekitAccessory create(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws Exception {
-        switch (taggedItem.getDeviceType()) {
-            case LIGHTBULB:
-                return new HomekitLightbulbImpl(taggedItem, itemRegistry, updater);
+    public HomekitAccessoryFactory(HomekitAccessoryUpdater updater, OpenhabHomekitBridge bridge) {
+        this.updater = updater;
+        this.bridge = bridge;
+    }
 
-            case DIMMABLE_LIGHTBULB:
-                return new HomekitDimmableLightbulbImpl(taggedItem, itemRegistry, updater);
-
-            case COLORFUL_LIGHTBULB:
-                return new HomekitColorfulLightbulbImpl(taggedItem, itemRegistry, updater);
-
-            case THERMOSTAT:
-                return new HomekitThermostatImpl(taggedItem, itemRegistry, updater, settings);
-
-            case SWITCH:
-                return new HomekitSwitchImpl(taggedItem, itemRegistry, updater);
-
-            case TEMPERATURE_SENSOR:
-                return new HomekitTemperatureSensorImpl(taggedItem, itemRegistry, updater, settings);
-
-            case HUMIDITY_SENSOR:
-                return new HomekitHumiditySensorImpl(taggedItem, itemRegistry, updater);
-
-            case WINDOW_COVERING:
-                return new HomekitWindowCovering(taggedItem, itemRegistry, updater);
+    @Override
+    public Accessory apply(Item item, Metadata metadata) {
+        if (metadata != null) {
+            switch (HomekitMetadataClass.fromMetadataClass(metadata.getValue())) {
+                case LIGHTING:
+                    return new HomekitLightbulbImpl(item, metadata, updater, bridge);
+                case DIMMABLE_LIGHTING:
+                    return new HomekitDimmableLightbulbImpl(item, metadata, updater, bridge);
+                case COLORFUL_LIGHTING:
+                    return new HomekitColorfulLightbulbImpl(item, metadata, updater, bridge);
+                case CURRENT_HUMIDITY:
+                    return new HomekitHumiditySensorImpl(item, metadata, updater, bridge);
+                case SWITCHABLE:
+                    return new HomekitSwitchImpl(item, metadata, updater, bridge);
+                case CURRENT_TEMPERATURE:
+                    return new HomekitTemperatureSensorImpl(item, metadata, updater, bridge);
+                case THERMOSTAT:
+                    return new HomekitThermostatImpl(item, metadata, updater, bridge);
+                case BLINDS:
+                    return new HomekitWindowCovering(item, metadata, updater, bridge);
+                default:
+                    break;
+            }
         }
+        return HomekitTag.fromItem(item).map(tag -> {
+            switch (tag) {
+                case LIGHT:
+                case LIGHTING:
+                    if (item instanceof ColorItem) {
+                        return new HomekitColorfulLightbulbImpl(item, metadata, updater, bridge);
+                    } else if (item instanceof DimmerItem) {
+                        return new HomekitDimmableLightbulbImpl(item, metadata, updater, bridge);
+                    } else {
+                        return new HomekitLightbulbImpl(item, metadata, updater, bridge);
+                    }
 
-        throw new Exception("Unknown homekit type: " + taggedItem.getDeviceType());
+                case DIMMABLE_LIGHTING:
+                    return new HomekitDimmableLightbulbImpl(item, metadata, updater, bridge);
+
+                case COLORFUL_LIGHTING:
+                    return new HomekitColorfulLightbulbImpl(item, metadata, updater, bridge);
+
+                case CURRENT_HUMIDITY:
+                    return new HomekitHumiditySensorImpl(item, metadata, updater, bridge);
+
+                case SWITCHABLE:
+                    return new HomekitSwitchImpl(item, metadata, updater, bridge);
+
+                case CURRENT_TEMPERATURE:
+                    return new HomekitTemperatureSensorImpl(item, metadata, updater, bridge);
+
+                case THERMOSTAT:
+                    return new HomekitThermostatImpl(item, metadata, updater, bridge);
+
+                case BLINDS:
+                    return new HomekitWindowCovering(item, metadata, updater, bridge);
+
+                default:
+                    logger.warn("Unrecognized homekit tag for root item {}", tag);
+            }
+            return null;
+        }).orElse(null);
     }
 }

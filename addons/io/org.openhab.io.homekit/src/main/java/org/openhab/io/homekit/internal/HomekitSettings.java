@@ -31,7 +31,6 @@ public class HomekitSettings {
     private String name = NAME;
     private int port = 9123;
     private String pin = "031-45-154";
-    private boolean useFahrenheitTemperature = false;
     private double minimumTemperature = -100;
     private double maximumTemperature = 100;
     private String thermostatHeatMode = "HeatOn";
@@ -58,15 +57,6 @@ public class HomekitSettings {
             }
         }
         this.pin = getOrDefault(properties.get("pin"), this.pin);
-        Object useFahrenheitTemperature = properties.get("useFahrenheitTemperature");
-        if (useFahrenheitTemperature instanceof Boolean) {
-            this.useFahrenheitTemperature = (Boolean) useFahrenheitTemperature;
-        } else if (useFahrenheitTemperature instanceof String) {
-            String useFahrenheitTemperatureString = (String) properties.get("useFahrenheitTemperature");
-            if (useFahrenheitTemperatureString != null) {
-                this.useFahrenheitTemperature = Boolean.valueOf(useFahrenheitTemperatureString);
-            }
-        }
         Object minimumTemperature = properties.get("minimumTemperature");
         if (minimumTemperature != null) {
             this.minimumTemperature = Double.parseDouble(minimumTemperature.toString());
@@ -131,10 +121,6 @@ public class HomekitSettings {
         return pin;
     }
 
-    public boolean useFahrenheitTemperature() {
-        return useFahrenheitTemperature;
-    }
-
     public double getMaximumTemperature() {
         return maximumTemperature;
     }
@@ -178,7 +164,6 @@ public class HomekitSettings {
         result = prime * result + ((thermostatCoolMode == null) ? 0 : thermostatCoolMode.hashCode());
         result = prime * result + ((thermostatHeatMode == null) ? 0 : thermostatHeatMode.hashCode());
         result = prime * result + ((thermostatOffMode == null) ? 0 : thermostatOffMode.hashCode());
-        result = prime * result + (useFahrenheitTemperature ? 1231 : 1237);
         return result;
     }
 
@@ -236,9 +221,6 @@ public class HomekitSettings {
                 return false;
             }
         } else if (!thermostatOffMode.equals(other.thermostatOffMode)) {
-            return false;
-        }
-        if (useFahrenheitTemperature != other.useFahrenheitTemperature) {
             return false;
         }
         return true;

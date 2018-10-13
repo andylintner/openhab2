@@ -1,4 +1,4 @@
-package org.openhab.io.homekit.accessory;
+package org.openhab.io.homekit.accessory.registry;
 
 import java.util.Optional;
 

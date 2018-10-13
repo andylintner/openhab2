@@ -8,10 +8,11 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
-import org.eclipse.smarthome.core.items.ItemRegistry;
+import org.eclipse.smarthome.core.items.Item;
+import org.eclipse.smarthome.core.items.Metadata;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
-import org.openhab.io.homekit.internal.HomekitTaggedItem;
+import org.openhab.io.homekit.internal.OpenhabHomekitBridge;
 
 /**
  * Implements Lightbulb using an Item that provides an On/Off state
@@ -20,9 +21,9 @@ import org.openhab.io.homekit.internal.HomekitTaggedItem;
  */
 class HomekitLightbulbImpl extends AbstractHomekitLightbulbImpl<SwitchItem> {
 
-    public HomekitLightbulbImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater) {
-        super(taggedItem, itemRegistry, updater, SwitchItem.class);
+    public HomekitLightbulbImpl(Item item, Metadata metadata, HomekitAccessoryUpdater updater,
+            OpenhabHomekitBridge bridge) {
+        super(item, metadata, updater, bridge, SwitchItem.class);
     }
 
 }

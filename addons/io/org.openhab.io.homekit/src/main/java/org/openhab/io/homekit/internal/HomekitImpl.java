@@ -13,8 +13,13 @@ import java.net.UnknownHostException;
 import java.security.InvalidAlgorithmParameterException;
 
 import org.eclipse.smarthome.core.items.ItemRegistry;
+import org.eclipse.smarthome.core.items.MetadataRegistry;
 import org.eclipse.smarthome.core.storage.StorageService;
 import org.openhab.io.homekit.Homekit;
+import org.openhab.io.homekit.accessory.registry.AccessoryRegistry;
+import org.openhab.io.homekit.accessory.registry.MetadataRegistryItemDiscovery;
+import org.openhab.io.homekit.accessory.registry.ItemDiscovery;
+import org.openhab.io.homekit.internal.accessories.HomekitAccessoryFactory;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,28 +32,44 @@ import org.slf4j.LoggerFactory;
 public class HomekitImpl implements Homekit {
 
     private final HomekitSettings settings = new HomekitSettings();
+    private AccessoryRegistry accessoryRegistry;
+    @SuppressWarnings("unused") // Keep a reference
+    private ItemDiscovery taggedItemDiscovery;
+    @SuppressWarnings("unused") // Keep a reference
+    private MetadataRegistryItemDiscovery metadataRegistryItemDiscovery;
     private OpenhabHomekitBridge bridge = null;
     private StorageService storageService;
-    private final HomekitChangeListener changeListener = new HomekitChangeListener();
     private Logger logger = LoggerFactory.getLogger(HomekitImpl.class);
+    private ItemRegistry itemRegistry;
+    private MetadataRegistry metadataRegistry;
+
+    private static final String METADATA_NAMESPACE = "homekit";
 
     public void setStorageService(StorageService storageService) {
         this.storageService = storageService;
     }
 
     public void setItemRegistry(ItemRegistry itemRegistry) {
-        changeListener.setSettings(settings);
-        changeListener.setItemRegistry(itemRegistry);
+        this.itemRegistry = itemRegistry;
+    }
+
+    public void setMetadataRegistry(MetadataRegistry metadataRegistry) {
+        this.metadataRegistry = metadataRegistry;
     }
 
     protected synchronized void activate(ComponentContext componentContext) {
         modified(componentContext);
+        accessoryRegistry = new AccessoryRegistry(new HomekitAccessoryFactory(new HomekitAccessoryUpdater(), bridge),
+                METADATA_NAMESPACE, metadataRegistry);
+        taggedItemDiscovery = new ItemDiscovery(itemRegistry, METADATA_NAMESPACE, metadataRegistry,
+                HomekitTag::hasTag, accessoryRegistry);
+        metadataRegistryItemDiscovery = new MetadataRegistryItemDiscovery(metadataRegistry, itemRegistry, "homekit",
+                accessoryRegistry);
     }
 
     protected synchronized void modified(ComponentContext componentContext) {
         try {
             settings.fill(componentContext.getProperties());
-            changeListener.setSettings(settings);
         } catch (UnknownHostException e) {
             logger.debug("Could not initialize homekit: {}", e.getMessage(), e);
             return;
@@ -61,13 +82,10 @@ public class HomekitImpl implements Homekit {
     }
 
     protected void deactivate() {
-        changeListener.clearAccessories();
         if (bridge != null) {
             bridge.stop();
             bridge = null;
         }
-        changeListener.setBridge(null);
-        changeListener.stop();
     }
 
     @Override
@@ -87,7 +105,7 @@ public class HomekitImpl implements Homekit {
     private void start() throws IOException, InvalidAlgorithmParameterException {
         if (bridge == null) {
             bridge = new OpenhabHomekitBridge(settings, storageService);
-            changeListener.setBridge(bridge);
+            // TODO: Add all accessories back
         }
     }
 }

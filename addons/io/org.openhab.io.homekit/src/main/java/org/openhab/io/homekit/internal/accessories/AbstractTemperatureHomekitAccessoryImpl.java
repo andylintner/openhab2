@@ -8,14 +8,17 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.math.BigDecimal;
+
 import org.eclipse.smarthome.core.items.GenericItem;
-import org.eclipse.smarthome.core.items.ItemRegistry;
+import org.eclipse.smarthome.core.items.Item;
+import org.eclipse.smarthome.core.items.Metadata;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
-import org.openhab.io.homekit.internal.HomekitSettings;
-import org.openhab.io.homekit.internal.HomekitTaggedItem;
+import org.openhab.io.homekit.internal.OpenhabHomekitBridge;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.beowulfe.hap.accessories.TemperatureSensor;
-import com.beowulfe.hap.accessories.properties.TemperatureUnit;
 
 /**
  *
@@ -24,42 +27,40 @@ import com.beowulfe.hap.accessories.properties.TemperatureUnit;
 abstract class AbstractTemperatureHomekitAccessoryImpl<T extends GenericItem> extends AbstractHomekitAccessoryImpl<T>
         implements TemperatureSensor {
 
-    private final HomekitSettings settings;
+    private final static Logger LOGGER = LoggerFactory.getLogger(AbstractTemperatureHomekitAccessoryImpl.class);
 
-    public AbstractTemperatureHomekitAccessoryImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater, HomekitSettings settings, Class<T> expectedItemClass) {
-        super(taggedItem, itemRegistry, updater, expectedItemClass);
-        this.settings = settings;
-    }
+    private final static String METADATA_CONFIGURATION_KEY_MAXIMUM_TEMPERATURE = "maximumTemperature";
+    private final static String METADATA_CONFIGURATION_KEY_MINIMUM_TEMPERATURE = "minimumTemperature";
 
-    @Override
-    public TemperatureUnit getTemperatureUnit() {
-        return settings.useFahrenheitTemperature() ? TemperatureUnit.FAHRENHEIT : TemperatureUnit.CELSIUS;
+    public AbstractTemperatureHomekitAccessoryImpl(Item item, Metadata metadata, HomekitAccessoryUpdater updater,
+            OpenhabHomekitBridge bridge, Class<T> expectedItemClass) {
+        super(item, metadata, updater, bridge, expectedItemClass);
     }
 
     @Override
     public double getMaximumTemperature() {
-        return settings.getMaximumTemperature();
+        Metadata metadata = getMetadata();
+        Double fromMetadata = metadata != null
+                ? toDouble(metadata.getConfiguration().get(METADATA_CONFIGURATION_KEY_MAXIMUM_TEMPERATURE))
+                : null;
+        return fromMetadata != null ? fromMetadata : bridge.getSettings().getMaximumTemperature();
     }
 
     @Override
     public double getMinimumTemperature() {
-        return settings.getMinimumTemperature();
+        Metadata metadata = getMetadata();
+        Double fromMetadata = metadata != null
+                ? toDouble(metadata.getConfiguration().get(METADATA_CONFIGURATION_KEY_MINIMUM_TEMPERATURE))
+                : null;
+        return fromMetadata != null ? fromMetadata : bridge.getSettings().getMinimumTemperature();
     }
 
-    protected double convertToCelsius(double degrees) {
-        if (settings.useFahrenheitTemperature()) {
-            return Math.round((5d / 9d) * (degrees - 32d) * 1000d) / 1000d;
+    private Double toDouble(Object value) {
+        if (value instanceof BigDecimal) {
+            return ((BigDecimal) value).doubleValue();
         } else {
-            return degrees;
-        }
-    }
-
-    protected double convertFromCelsius(double degrees) {
-        if (settings.useFahrenheitTemperature()) {
-            return Math.round((((9d / 5d) * degrees) + 32d) * 10d) / 10d;
-        } else {
-            return degrees;
+            LOGGER.warn("Unexpected type for metadata value: " + value.getClass());
+            return null;
         }
     }
 }

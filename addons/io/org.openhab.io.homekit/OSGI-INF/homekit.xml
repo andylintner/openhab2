@@ -11,8 +11,9 @@
 -->
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" configuration-policy="optional" immediate="true" modified="modified" name="org.openhab.homekit">
 	<implementation class="org.openhab.io.homekit.internal.HomekitImpl"/>
+	<reference bind="setItemRegistry" cardinality="1..1" interface="org.eclipse.smarthome.core.items.ItemRegistry" policy="static" name="ItemRegistry"/>
+	<reference bind="setMetadataRegistry" cardinality="1..1" interface="org.eclipse.smarthome.core.items.MetadataRegistry" policy="static" name="MetadataRegistry"/>
 	<reference bind="setStorageService" cardinality="1..1" interface="org.eclipse.smarthome.core.storage.StorageService" policy="static" name="StorageService"/>
-	<reference bind="setItemRegistry" cardinality="1..1" interface="org.eclipse.smarthome.core.items.ItemRegistry" name="ItemRegistry" policy="static"/>
 	<service>
 		<provide interface="org.openhab.io.homekit.Homekit" />
 	</service>

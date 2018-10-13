@@ -41,6 +41,8 @@ public class OpenhabHomekitBridge {
     @NonNull
     private final static String STORAGE_TARGET_VERSION_KEY = "targetVersion";
 
+    private final HomekitSettings settings;
+
     public OpenhabHomekitBridge(HomekitSettings settings, StorageService storageService)
             throws InvalidAlgorithmParameterException, IOException {
         storage = storageService.getStorage("homekit");
@@ -52,6 +54,7 @@ public class OpenhabHomekitBridge {
                 .orElse(0);
         startupTimeout = settings.getStartupTimeout();
         scheduler.schedule(() -> this.timeoutExpired(), startupTimeout, TimeUnit.SECONDS);
+        this.settings = settings;
     }
 
     public void stop() {
@@ -77,7 +80,7 @@ public class OpenhabHomekitBridge {
         currentState.put(accessory.getId(), accessory.getClass());
 
         if (!started.get()) {
-            if (targetState.equals(serializeState())) {
+            if (targetState != null && targetState.equals(serializeState())) {
                 logger.info("Reached homekit target state for version {}, starting", targetVersion);
                 if (started.compareAndSet(false, true)) {
                     doStart();
@@ -95,6 +98,10 @@ public class OpenhabHomekitBridge {
             }
             logger.debug("New homekit target state set");
         }
+    }
+
+    public HomekitSettings getSettings() {
+        return settings;
     }
 
     private String serializeState() {
